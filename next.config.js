@@ -1,31 +1,33 @@
 /** @type {import('next').NextConfig} */
 const NextFederationPlugin = require("@module-federation/nextjs-mf")
-
-const HOST_APP_BASE_URL =
-  process.env.HOST_APP_BASE_URL || "http://localhost:3000"
-
-const remotes = (isServer) => {
-  const location = isServer ? "ssr" : "chunks"
-  return {
-    "host-app": `host-app@${HOST_APP_BASE_URL}/_next/static/${location}/remoteEntry.js`,
-  }
-}
+const ModuleFederationPlugin =
+  require("webpack").container.ModuleFederationPlugin
 
 const nextConfig = {
   reactStrictMode: true,
   webpack(config, options) {
     config.plugins.push(
       new NextFederationPlugin({
-        name: "blue-app",
+        name: "products",
         filename: "static/chunks/remoteEntry.js",
         exposes: {
           "./home": "./src/pages/index.tsx",
           "./api": "./src/pages/api/products/index.ts",
         },
-        remotes: remotes(options.isServer),
+        remotes: {},
         shared: {},
         extraOptions: {
-          exposePages: true,
+          exposePages: false,
+        },
+      }),
+    )
+    config.plugins.push(
+      new ModuleFederationPlugin({
+        name: "products_services",
+        filename: "static/chunks/remoteServicesEntry.js",
+        library: { type: "commonjs-module" },
+        exposes: {
+          "./getProductsApiRoute": "./src/pages/api/products/index.ts",
         },
       }),
     )

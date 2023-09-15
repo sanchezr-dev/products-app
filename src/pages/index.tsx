@@ -7,10 +7,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const categoryList = await getCategories()
   const initialCategory = categoryList[0]
   const initialProductList = await getProducts(initialCategory)
-  const token = (context.req as any).session.data.accessToken
+  const token = (context.req as any).session?.data?.accessToken
   return {
     props: {
-      token: token,
+      token: token || null,
       initialCategory: initialCategory,
       categoryList: categoryList,
       initialProductList: initialProductList,
@@ -44,7 +44,7 @@ const HomePage = ({
     <div className="px-36 py-24">
       <h3 className="text-white mb-6 font-bold text-4xl">Product List</h3>
       <h5 className="text-white mb-3 font-bold text-xl">Access token</h5>
-      <p className="text-white mb-9 text-sm break-words">{token}</p>
+      <p className="text-white mb-9 text-sm break-words">{token || ""}</p>
       <div className="col-span-full">
         <label
           htmlFor="category"
